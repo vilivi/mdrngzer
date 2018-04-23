@@ -6,8 +6,21 @@
 #include <QDebug>
 #include <set>
 #include <array>
+
+#ifdef __linux__
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <spawn.h>
+#include <unistd.h>
+extern char **environ;
+#endif
+
+#if _WIN32
 #include <process.h>
 #include <direct.h>
+#endif
+
 #include <stdio.h>
 
 ROM::ROM(unsigned seed) : rand(seed) {
@@ -75,11 +88,36 @@ void ROM::open(const std::string &filePath) {
         throw std::string("Please select a ROM before trying to randomize.");
     }
 
+#ifdef __linux__
+	mkdir("rom", 0777);
+	std::string romPath = filePath;
+	const char *my_args[21]{
+	  "ndstool",
+		"-x",
+        romPath.c_str(),
+        "-9",
+        "rom/arm9.bin",
+        "-7",
+        "rom/arm7.bin",
+        "-y9",
+		"rom/y9.bin",
+        "-y7",
+        "rom/y7.bin",
+        "-d",
+        "rom/data",
+        "-y",
+        "rom/overlay",
+        "-t",
+        "rom/banner.bin",
+        "-h",
+        "rom/header.bin",
+        nullptr };
+#endif
+	
+#ifdef _WIN32
     mkdir("rom");
-
-    std::string romPath = "\"" + filePath + "\"";
-
-    const char *my_args[21]{
+	std::string romPath = "\"" + filePath + "\"";
+	const char *my_args[21]{
         "ndstool.exe",
         "-x",
         romPath.c_str(),
@@ -100,8 +138,19 @@ void ROM::open(const std::string &filePath) {
         "-h",
         "\"rom/header.bin\"",
         nullptr };
+#endif
 
+#ifdef __linux__
+	pid_t process_id;
+	int status;
+	posix_spawn(&process_id, "/usr/bin/ndstool", NULL, NULL, const_cast<char * const *>(my_args), environ);
+	waitpid(process_id, &status, WUNTRACED);
+	while(!WIFEXITED(status) && !WIFSIGNALED(status));
+#endif
+	
+#ifdef _WIN32
     spawnv(P_WAIT, "ndstool.exe", my_args);
+#endif
 
     std::vector<uint8_t> memory;
 
@@ -116,13 +165,38 @@ void ROM::open(const std::string &filePath) {
 
 void ROM::save(const std::string &filePath) {
 
-    std::string romPath = "\"" + filePath + "\"";
-
-    const char *my_args[21]{
-        "ndstool.exe",
-        "-c",
-        romPath.c_str(),
-        "-9",
+#ifdef __linux__
+     std::string romPath = filePath;
+     const char *my_args[21]{
+	    "ndstool",
+	    "-c",
+	    romPath.c_str(),
+	    "-9",
+        "rom/arm9.bin",
+        "-7",
+        "rom/arm7.bin",
+        "-y9",
+        "rom/y9.bin",
+        "-y7",
+        "rom/y7.bin",
+        "-d",
+        "rom/data",
+        "-y",
+        "rom/overlay",
+        "-t",
+        "rom/banner.bin",
+        "-h",
+        "rom/header.bin",
+        nullptr };
+#endif
+  
+#ifdef _WIN32
+     std::string romPath = "\"" + filePath + "\"";
+     const char *my_args[21]{
+	    "ndstool.exe",
+	    "-c",
+	    romPath.c_str(),
+	    "-9",
         "\"rom/arm9.bin\"",
         "-7",
         "\"rom/arm7.bin\"",
@@ -139,9 +213,20 @@ void ROM::save(const std::string &filePath) {
         "-h",
         "\"rom/header.bin\"",
         nullptr };
+#endif
 
+#ifdef __linux__
+	pid_t process_id;
+	int status;
+	posix_spawn(&process_id, "/usr/bin/ndstool", NULL, NULL, const_cast<char * const *>(my_args), environ);
+	waitpid(process_id, &status, WUNTRACED);
+	while(!WIFEXITED(status) && !WIFSIGNALED(status));
+#endif
+	
+#ifdef _WIN32
     spawnv(P_WAIT, "ndstool.exe", my_args);
-
+#endif
+	
     rmdir("rom");
 }
 

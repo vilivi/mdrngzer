@@ -27,12 +27,12 @@ public:
     void randText();
     void randStarters();
     
-private:
     std::vector<uint8_t> dungeonMemory;
     std::vector<uint8_t> pokemonMemory;
     std::vector<uint8_t> moveMemory;
     std::vector<uint8_t> overlay13Memory;
     std::vector<uint8_t> textMemory;
+public:
 
     std::mt19937 rand;
     

@@ -37,7 +37,7 @@ void Dialog::randomize() {
 
 
 
-        if(rom.loadFile("rom/data/BALANCE/mappa_s.bin")) {
+        if(rom.loadFile("rom/data/BALANCE/mappa_s.bin", rom.dungeonMemory)) {
             throw std::string("ROM: Failed to open mappa_s.bin");
         }
 
@@ -57,11 +57,11 @@ void Dialog::randomize() {
             rom.randItems();
         ui->progressBar->setValue(40);
 
-        rom.saveFile("rom/data/BALANCE/mappa_s.bin");
+        rom.saveFile("rom/data/BALANCE/mappa_s.bin", rom.dungeonMemory);
 
 
 
-        if(rom.loadFile("rom/data/BALANCE/monster.md")) {
+        if(rom.loadFile("rom/data/BALANCE/monster.md", rom.pokemonMemory)) {
             throw std::string("ROM: Failed to open monster.md");
         }
 
@@ -77,11 +77,11 @@ void Dialog::randomize() {
             rom.randAbilities(ui->AbilityPercentBox->value());
         ui->progressBar->setValue(70);
 
-        rom.saveFile("rom/data/BALANCE/monster.md");
+        rom.saveFile("rom/data/BALANCE/monster.md", rom.pokemonMemory);
 
 
 
-        if(rom.loadFile("rom/data/BALANCE/waza_p.bin")) {
+        if(rom.loadFile("rom/data/BALANCE/waza_p.bin", rom.moveMemory)) {
             throw std::string("ROM: Failed to open waza_p.bin");
         }
 
@@ -89,11 +89,11 @@ void Dialog::randomize() {
             rom.randMoveset();
         ui->progressBar->setValue(80);
 
-        rom.saveFile("rom/data/BALANCE/waza_p.bin");
+        rom.saveFile("rom/data/BALANCE/waza_p.bin", rom.moveMemory);
 
 
 
-        if(rom.loadFile("rom/overlay/overlay_0013.bin")) {
+        if(rom.loadFile("rom/overlay/overlay_0013.bin", rom.overlay13Memory)) {
             throw std::string("ROM: Failed to open overlay_0013.bin");
         }
 
@@ -101,10 +101,10 @@ void Dialog::randomize() {
             rom.randStarters();
         ui->progressBar->setValue(90);
 
-        rom.saveFile("rom/overlay/overlay_0013.bin");
+        rom.saveFile("rom/overlay/overlay_0013.bin", rom.overlay13Memory);
 
 
-        if(rom.loadFile("rom/data/MESSAGE/text_e.str")) {
+        if(rom.loadFile("rom/data/MESSAGE/text_e.str", rom.textMemory)) {
             throw std::string("ROM: Failed to open text_e.str");
         }
 
@@ -112,7 +112,7 @@ void Dialog::randomize() {
             rom.randText();
         ui->progressBar->setValue(100);
 
-        rom.saveFile("rom/data/MESSAGE/text_e.str");
+        rom.saveFile("rom/data/MESSAGE/text_e.str", rom.textMemory);
 
 
 
